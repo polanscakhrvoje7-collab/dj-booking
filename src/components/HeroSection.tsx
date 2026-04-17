@@ -41,7 +41,7 @@ export function HeroSection() {
         </p>
 
         {/* CTA */}
-        <div className="animate-fade-up animation-delay-500 flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <div className="animate-fade-up animation-delay-500 flex flex-col items-center justify-center gap-3">
           <Button
             size="lg"
             onClick={scrollToBooking}
