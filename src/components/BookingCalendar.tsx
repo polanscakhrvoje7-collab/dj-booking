@@ -20,14 +20,19 @@ export function BookingCalendar({ selected, onSelect }: BookingCalendarProps) {
   // Swipe / drag state (refs = no re-render during drag)
   const cardRef = useRef<HTMLDivElement>(null);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const directionLock = useRef<"h" | "v" | null>(null);
 
   const isFirstMonth =
     month.getFullYear() === today.getFullYear() &&
     month.getMonth() === today.getMonth();
 
+  // Keep a ref so the non-passive listener always sees the latest value
+  const isFirstMonthRef = useRef(isFirstMonth);
+  isFirstMonthRef.current = isFirstMonth;
+
   /** Apply a resisted (sqrt-damped) offset when dragging toward a blocked direction */
   const resist = (raw: number) =>
-    raw > 0 && isFirstMonth ? Math.sqrt(raw) * 7 : raw;
+    raw > 0 && isFirstMonthRef.current ? Math.sqrt(raw) * 7 : raw;
 
   const setTransform = (x: number, transition = "none") => {
     const el = cardRef.current;
@@ -55,6 +60,34 @@ export function BookingCalendar({ selected, onSelect }: BookingCalendarProps) {
       );
     }, 220);
   };
+
+  // Non-passive touchmove: lock direction, prevent page scroll on horizontal swipe
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    const onMove = (e: TouchEvent) => {
+      if (!touchStart.current) return;
+      const dx = e.touches[0].clientX - touchStart.current.x;
+      const dy = e.touches[0].clientY - touchStart.current.y;
+
+      if (!directionLock.current) {
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 4) directionLock.current = "h";
+        else if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 4) directionLock.current = "v";
+        else return;
+      }
+
+      if (directionLock.current === "h") {
+        e.preventDefault(); // stop page from scrolling
+        const el2 = cardRef.current;
+        if (el2) {
+          el2.style.transition = "none";
+          el2.style.transform = `translateX(${resist(dx)}px)`;
+        }
+      }
+    };
+    el.addEventListener("touchmove", onMove, { passive: false });
+    return () => el.removeEventListener("touchmove", onMove);
+  }, []);
 
   const fetchAvailability = () => {
     fetch("/api/availability")
@@ -116,14 +149,8 @@ export function BookingCalendar({ selected, onSelect }: BookingCalendarProps) {
           className="bg-white p-4"
           onTouchStart={(e) => {
             touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            directionLock.current = null;
             setTransform(0);
-          }}
-          onTouchMove={(e) => {
-            if (!touchStart.current) return;
-            const dx = e.touches[0].clientX - touchStart.current.x;
-            const dy = e.touches[0].clientY - touchStart.current.y;
-            if (Math.abs(dy) > Math.abs(dx)) return; // vertical scroll — ignore
-            setTransform(resist(dx));
           }}
           onTouchEnd={(e) => {
             if (!touchStart.current) return;
