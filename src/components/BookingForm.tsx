@@ -15,7 +15,7 @@ import { WheelPicker } from "@/components/ui/wheel-picker";
 import { cn } from "@/lib/utils";
 
 const HOURS = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
-const MINUTES = ["00", "15", "30", "45"];
+const MINUTES = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, "0"));
 
 // ── Validation schema ─────────────────────────────────────────────────────────
 const bookingSchema = z.object({
@@ -176,7 +176,7 @@ export function BookingForm({ selectedDate }: BookingFormProps) {
           />
         </Field>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Vrijeme Događaja" error={errors.time?.message}>
             <Controller
               control={control}
@@ -184,7 +184,7 @@ export function BookingForm({ selectedDate }: BookingFormProps) {
               render={({ field }) => {
                 const [hh, mm] = (field.value ?? "20:00").split(":") as [string, string];
                 return (
-                  <div className="flex items-center justify-center gap-3 bg-white py-2" style={{ border: "1px solid #d4d4d8" }}>
+                  <div className="flex items-center justify-center gap-2 bg-white py-2" style={{ border: "1px solid #d4d4d8" }}>
                     <WheelPicker
                       items={HOURS}
                       value={hh ?? "20"}
