@@ -183,9 +183,9 @@ export function BookingCalendar({ selected, onSelect }: BookingCalendarProps) {
           className="p-0"
           classNames={{
             root: "w-full",
-            months: "relative w-full",
-            month: "w-full",
-            table: "w-full",
+            months: "relative flex flex-col w-full",
+            month: "flex flex-col w-full",
+            table: "w-full table-fixed",
             weekdays: "flex",
             weekday: "flex-1 text-center text-[0.75rem] font-medium text-zinc-400 select-none py-1",
             week: "mt-1 flex w-full",
