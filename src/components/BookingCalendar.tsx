@@ -16,7 +16,45 @@ export function BookingCalendar({ selected, onSelect }: BookingCalendarProps) {
   const today = new Date();
   const [month, setMonth] = useState<Date>(today);
   const [busyDates, setBusyDates] = useState<Set<string>>(new Set());
-  const swipeRef = useRef<{ x: number; y: number } | null>(null);
+
+  // Swipe / drag state (refs = no re-render during drag)
+  const cardRef = useRef<HTMLDivElement>(null);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+
+  const isFirstMonth =
+    month.getFullYear() === today.getFullYear() &&
+    month.getMonth() === today.getMonth();
+
+  /** Apply a resisted (sqrt-damped) offset when dragging toward a blocked direction */
+  const resist = (raw: number) =>
+    raw > 0 && isFirstMonth ? Math.sqrt(raw) * 7 : raw;
+
+  const setTransform = (x: number, transition = "none") => {
+    const el = cardRef.current;
+    if (!el) return;
+    el.style.transition = transition;
+    el.style.transform = x === 0 ? "" : `translateX(${x}px)`;
+  };
+
+  const slideToMonth = (direction: -1 | 1) => {
+    const el = cardRef.current;
+    if (!el) return;
+    const w = el.offsetWidth;
+    // slide out
+    setTransform(direction * -w, "transform 0.22s ease-in");
+    setTimeout(() => {
+      setMonth((m) =>
+        direction === -1 ? addMonths(m, 1) : subMonths(m, 1)
+      );
+      // snap to opposite side instantly, then slide in
+      setTransform(direction * w);
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() =>
+          setTransform(0, "transform 0.22s ease-out")
+        )
+      );
+    }, 220);
+  };
 
   const fetchAvailability = () => {
     fetch("/api/availability")
@@ -65,31 +103,45 @@ export function BookingCalendar({ selected, onSelect }: BookingCalendarProps) {
         <p className="text-xs text-zinc-400 mt-0.5">Dostupni dani: {getAvailabilityLabel()}</p>
       </div>
 
-      {/* Calendar card */}
+      {/* Calendar card — outer clips overflow during slide animation */}
       <div
         className={cn(
-          "border bg-white p-4 transition-colors duration-200",
+          "overflow-hidden border transition-colors duration-200",
           selected ? "border-zinc-900" : "border-zinc-200"
         )}
-        onTouchStart={(e) => {
-          const t = e.touches[0];
-          swipeRef.current = { x: t.clientX, y: t.clientY };
-        }}
-        onTouchEnd={(e) => {
-          if (!swipeRef.current) return;
-          const dx = e.changedTouches[0].clientX - swipeRef.current.x;
-          const dy = e.changedTouches[0].clientY - swipeRef.current.y;
-          swipeRef.current = null;
-          if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
-          if (dx < 0) {
-            setMonth((m) => addMonths(m, 1));
-          } else {
-            const prev = subMonths(month, 1);
-            if (prev >= today || prev.getMonth() === today.getMonth()) return;
-            setMonth(prev);
-          }
-        }}
       >
+        {/* Inner div moves during swipe/slide */}
+        <div
+          ref={cardRef}
+          className="bg-white p-4"
+          onTouchStart={(e) => {
+            touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            setTransform(0);
+          }}
+          onTouchMove={(e) => {
+            if (!touchStart.current) return;
+            const dx = e.touches[0].clientX - touchStart.current.x;
+            const dy = e.touches[0].clientY - touchStart.current.y;
+            if (Math.abs(dy) > Math.abs(dx)) return; // vertical scroll — ignore
+            setTransform(resist(dx));
+          }}
+          onTouchEnd={(e) => {
+            if (!touchStart.current) return;
+            const dx = e.changedTouches[0].clientX - touchStart.current.x;
+            const dy = e.changedTouches[0].clientY - touchStart.current.y;
+            touchStart.current = null;
+
+            const isSwipe = Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy);
+
+            if (!isSwipe || (dx > 0 && isFirstMonth)) {
+              // Spring back with bounce
+              setTransform(0, "transform 0.4s cubic-bezier(0.34,1.56,0.64,1)");
+              return;
+            }
+
+            slideToMonth(dx < 0 ? -1 : 1);
+          }}
+        >
         <Calendar
           mode="single"
           selected={selected}
@@ -115,6 +167,7 @@ export function BookingCalendar({ selected, onSelect }: BookingCalendarProps) {
             day_button: "w-full h-full min-h-[2.75rem]",
           }}
         />
+        </div>
       </div>
 
       {/* Legend */}
