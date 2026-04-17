@@ -184,17 +184,19 @@ export function BookingForm({ selectedDate }: BookingFormProps) {
               render={({ field }) => {
                 const [hh, mm] = (field.value ?? "20:00").split(":") as [string, string];
                 return (
-                  <div className="flex items-center justify-center gap-3 bg-white px-6 py-2" style={{ border: "1px solid #d4d4d8" }}>
+                  <div className="flex items-center justify-center gap-3 bg-white py-2" style={{ border: "1px solid #d4d4d8" }}>
                     <WheelPicker
                       items={HOURS}
                       value={hh ?? "20"}
                       onChange={(h) => field.onChange(`${h}:${mm ?? "00"}`)}
+                      extraLeft={24}
                     />
                     <span className="text-2xl font-bold text-zinc-300 pb-1">:</span>
                     <WheelPicker
                       items={MINUTES}
                       value={mm ?? "00"}
                       onChange={(m) => field.onChange(`${hh ?? "20"}:${m}`)}
+                      extraRight={24}
                     />
                   </div>
                 );

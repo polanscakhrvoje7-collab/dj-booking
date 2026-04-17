@@ -6,10 +6,15 @@ interface WheelPickerProps {
   items: string[];
   value: string;
   onChange: (value: string) => void;
+  /** Extra transparent touch area added to the left side (px) */
+  extraLeft?: number;
+  /** Extra transparent touch area added to the right side (px) */
+  extraRight?: number;
 }
 
 const ITEM_H = 44;
 const VISIBLE = 7;
+const CONTENT_W = 72; // 4.5rem — visual width of each column
 
 function itemStyle(distance: number): React.CSSProperties {
   switch (distance) {
@@ -24,7 +29,7 @@ function itemStyle(distance: number): React.CSSProperties {
   }
 }
 
-export function WheelPicker({ items, value, onChange }: WheelPickerProps) {
+export function WheelPicker({ items, value, onChange, extraLeft = 0, extraRight = 0 }: WheelPickerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const centeredRef = useRef(Math.max(0, items.indexOf(value)));
   const [centeredIndex, setCenteredIndex] = useState(centeredRef.current);
@@ -91,15 +96,24 @@ export function WheelPicker({ items, value, onChange }: WheelPickerProps) {
 
   const pad = Math.floor(VISIBLE / 2);
 
+  const totalWidth = CONTENT_W + extraLeft + extraRight;
+
   return (
-    <div className="relative overflow-hidden" style={{ height: ITEM_H * VISIBLE, width: "4.5rem" }}>
-      {/* Center highlight */}
+    <div className="relative overflow-hidden" style={{ height: ITEM_H * VISIBLE, width: totalWidth }}>
+      {/* Center highlight — sits over the visual content area only */}
       <div
-        className="pointer-events-none absolute inset-x-0 z-10"
-        style={{ top: pad * ITEM_H, height: ITEM_H, borderTop: "1px solid #d4d4d8", borderBottom: "1px solid #d4d4d8" }}
+        className="pointer-events-none absolute z-10"
+        style={{
+          top: pad * ITEM_H,
+          height: ITEM_H,
+          left: extraLeft,
+          right: extraRight,
+          borderTop: "1px solid #d4d4d8",
+          borderBottom: "1px solid #d4d4d8",
+        }}
       />
 
-      {/* Scroll list */}
+      {/* Scroll list — full width so touching the extra area still scrolls */}
       <div
         ref={containerRef}
         className="h-full overflow-y-scroll [&::-webkit-scrollbar]:hidden"
@@ -116,8 +130,8 @@ export function WheelPicker({ items, value, onChange }: WheelPickerProps) {
           return (
             <div
               key={item}
-              style={{ scrollSnapAlign: "center", height: ITEM_H, transition: "all 0.15s ease", ...itemStyle(dist) }}
-              className="flex items-center justify-center cursor-pointer"
+              style={{ scrollSnapAlign: "center", height: ITEM_H }}
+              className="flex items-center cursor-pointer"
               onClick={() => {
                 centeredRef.current = i;
                 setCenteredIndex(i);
@@ -125,7 +139,21 @@ export function WheelPicker({ items, value, onChange }: WheelPickerProps) {
                 scrollToIndex(i);
               }}
             >
-              {item}
+              {/* Visual content offset so it stays inside the non-extra strip */}
+              <div
+                style={{
+                  marginLeft: extraLeft,
+                  width: CONTENT_W,
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  transition: "all 0.15s ease",
+                  ...itemStyle(dist),
+                }}
+              >
+                {item}
+              </div>
             </div>
           );
         })}
