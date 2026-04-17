@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { isDateAvailable, getAvailabilityLabel, MIN_ADVANCE_DAYS } from "@/lib/availability";
-import { format } from "date-fns";
+import { addMonths, format, subMonths } from "date-fns";
 import { hr } from "date-fns/locale/hr";
 import { cn } from "@/lib/utils";
 
@@ -14,7 +14,9 @@ interface BookingCalendarProps {
 
 export function BookingCalendar({ selected, onSelect }: BookingCalendarProps) {
   const today = new Date();
+  const [month, setMonth] = useState<Date>(today);
   const [busyDates, setBusyDates] = useState<Set<string>>(new Set());
+  const swipeRef = useRef<{ x: number; y: number } | null>(null);
 
   const fetchAvailability = () => {
     fetch("/api/availability")
@@ -69,21 +71,40 @@ export function BookingCalendar({ selected, onSelect }: BookingCalendarProps) {
           "border bg-white p-4 transition-colors duration-200",
           selected ? "border-zinc-900" : "border-zinc-200"
         )}
+        onTouchStart={(e) => {
+          const t = e.touches[0];
+          swipeRef.current = { x: t.clientX, y: t.clientY };
+        }}
+        onTouchEnd={(e) => {
+          if (!swipeRef.current) return;
+          const dx = e.changedTouches[0].clientX - swipeRef.current.x;
+          const dy = e.changedTouches[0].clientY - swipeRef.current.y;
+          swipeRef.current = null;
+          if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+          if (dx < 0) {
+            setMonth((m) => addMonths(m, 1));
+          } else {
+            const prev = subMonths(month, 1);
+            if (prev >= today || prev.getMonth() === today.getMonth()) return;
+            setMonth(prev);
+          }
+        }}
       >
         <Calendar
           mode="single"
           selected={selected}
           onSelect={onSelect}
           disabled={isDisabled}
+          month={month}
+          onMonthChange={(m) => { setMonth(m); fetchAvailability(); }}
           fromMonth={today}
           captionLayout="label"
           locale={hr}
           weekStartsOn={1}
-          onMonthChange={() => fetchAvailability()}
           className="p-0"
           classNames={{
             root: "w-full",
-            months: "w-full",
+            months: "relative w-full",
             month: "w-full",
             table: "w-full",
             weekdays: "flex",
