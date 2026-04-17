@@ -101,8 +101,11 @@ export function BookingForm({ selectedDate }: BookingFormProps) {
         description: `Kontaktirat ćemo vas s potvrdom za ${format(selectedDate, "d. MMMM yyyy.", { locale: hr })}.`,
       });
       reset();
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Neuspješno slanje rezervacije.");
+    } catch {
+      toast.error("Stranica trenutno ima poteškoća.", {
+        description: "Možete nas kontaktirati na +385 99 041 802 402.",
+        duration: 8000,
+      });
     } finally {
       setIsSubmitting(false);
     }
