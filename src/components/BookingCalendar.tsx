@@ -80,8 +80,10 @@ export function BookingCalendar({ selected, onSelect }: BookingCalendarProps) {
           locale={hr}
           weekStartsOn={1}
           onMonthChange={() => fetchAvailability()}
+          className="p-0"
           classNames={{
             root: "w-full",
+            months: "w-full",
             month: "w-full",
             table: "w-full",
             weekdays: "flex",
@@ -95,17 +97,17 @@ export function BookingCalendar({ selected, onSelect }: BookingCalendarProps) {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-6 border border-zinc-100 bg-zinc-50 px-4 py-2.5">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border border-zinc-100 bg-zinc-50 px-4 py-2.5">
         <div className="flex items-center gap-2">
-          <div className="h-2.5 w-2.5 rounded-full bg-zinc-900" />
+          <div className="h-2.5 w-2.5 shrink-0 rounded-full bg-zinc-900" />
           <span className="text-xs text-zinc-500">Odabrano</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="h-2.5 w-2.5 rounded-full bg-zinc-400" />
+          <div className="h-2.5 w-2.5 shrink-0 rounded-full bg-zinc-400" />
           <span className="text-xs text-zinc-500">Nedostupno</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="h-2.5 w-2.5 rounded-full border-2 border-zinc-900 bg-white" />
+          <div className="h-2.5 w-2.5 shrink-0 rounded-full border-2 border-zinc-900 bg-white" />
           <span className="text-xs text-zinc-500">Dostupno</span>
         </div>
       </div>

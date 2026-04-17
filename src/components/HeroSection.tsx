@@ -9,7 +9,7 @@ export function HeroSection() {
   };
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-zinc-950 [touch-action:manipulation]">
+    <section id="hero" className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-zinc-950 [touch-action:manipulation]">
       {/* Content */}
       <div className="relative z-10 mx-auto w-full max-w-5xl px-6 text-center">
         {/* Eyebrow */}

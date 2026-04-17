@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Space_Grotesk } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
+import { ThemeColorSwitcher } from "@/components/ThemeColorSwitcher";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -9,6 +10,10 @@ const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
 });
+
+export const viewport: Viewport = {
+  themeColor: "#09090b",
+};
 
 export const metadata: Metadata = {
   title: "DJ Hrchoy — Rezervacije i Dostupnost",
@@ -32,6 +37,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           {children}
           <Toaster position="top-right" richColors />
+          <ThemeColorSwitcher />
         </ThemeProvider>
       </body>
     </html>

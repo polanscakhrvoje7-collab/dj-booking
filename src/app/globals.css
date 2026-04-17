@@ -125,6 +125,7 @@
     @apply bg-background text-foreground;
     font-feature-settings: "kern" 1, "liga" 1;
     -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
   }
   html {
     @apply font-sans;
