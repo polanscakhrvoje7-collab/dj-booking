@@ -189,7 +189,7 @@ export function BookingCalendar({ selected, onSelect }: BookingCalendarProps) {
             weekdays: "flex",
             weekday: "flex-1 text-center text-[0.75rem] font-medium text-zinc-400 select-none py-1",
             week: "mt-1 flex w-full",
-            day: "flex-1 text-center",
+            day: "flex-1 flex items-center justify-center",
             disabled: "opacity-100",
             day_button: "w-full h-full min-h-[2.75rem]",
           }}
