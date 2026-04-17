@@ -40,14 +40,14 @@ export function BookingCalendar({ selected, onSelect }: BookingCalendarProps) {
     const el = cardRef.current;
     if (!el) return;
     const w = el.offsetWidth;
-    // slide out
-    setTransform(direction * -w, "transform 0.22s ease-in");
+    // slide out in the direction of the swipe
+    setTransform(direction * w, "transform 0.22s ease-in");
     setTimeout(() => {
       setMonth((m) =>
         direction === -1 ? addMonths(m, 1) : subMonths(m, 1)
       );
-      // snap to opposite side instantly, then slide in
-      setTransform(direction * w);
+      // snap to the opposite side, then slide in
+      setTransform(direction * -w);
       requestAnimationFrame(() =>
         requestAnimationFrame(() =>
           setTransform(0, "transform 0.22s ease-out")
