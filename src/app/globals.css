@@ -153,10 +153,16 @@
 
 
 /* ── Form inputs: explicit borders/colors to override Windows system theme ── */
+/* font-size: 1rem (16px) prevents iOS Safari from zooming on input focus    */
 [data-slot="input"] {
   border: 1px solid #d4d4d8 !important; /* zinc-300 */
   color: #09090b !important;
   background-color: #ffffff !important;
+  font-size: 1rem !important;
+}
+
+input, textarea, select {
+  font-size: 1rem !important;
 }
 
 [data-slot="input"]:focus,

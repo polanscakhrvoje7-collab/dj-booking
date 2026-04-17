@@ -63,6 +63,32 @@ export function WheelPicker({ items, value, onChange }: WheelPickerProps) {
     return () => el.removeEventListener("wheel", onWheel);
   }, [items, onChange, scrollToIndex]);
 
+  // Track touch scroll in real-time so visual effects (color/zoom) follow the finger
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    let rafId: number;
+    const onScroll = () => {
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        const index = Math.max(
+          0,
+          Math.min(items.length - 1, Math.round(el.scrollTop / ITEM_H))
+        );
+        if (index !== centeredRef.current) {
+          centeredRef.current = index;
+          setCenteredIndex(index);
+          onChange(items[index]);
+        }
+      });
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      el.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(rafId);
+    };
+  }, [items, onChange]);
+
   const pad = Math.floor(VISIBLE / 2);
 
   return (
