@@ -1,0 +1,39 @@
+import type { Metadata } from "next";
+import { Space_Grotesk } from "next/font/google";
+import { ThemeProvider } from "next-themes";
+import { Toaster } from "@/components/ui/sonner";
+import "./globals.css";
+
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+});
+
+export const metadata: Metadata = {
+  title: "DJ Hrchoy — Rezervacije i Dostupnost",
+  description:
+    "Rezervirajte vaš događaj s DJ Hrchoy. Provjerite dostupnost i pošaljite zahtjev za rezervaciju.",
+  openGraph: {
+    title: "DJ Hrchoy — Rezervacije i Dostupnost",
+    description: "Profesionalne DJ usluge. Provjerite dostupnost i rezervirajte vaš datum.",
+    type: "website",
+  },
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+      <html lang="hr" className={`${spaceGrotesk.variable} h-full antialiased`} suppressHydrationWarning>
+      <body className="min-h-full flex flex-col bg-white text-zinc-900">
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+          {children}
+          <Toaster position="top-right" richColors />
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}
