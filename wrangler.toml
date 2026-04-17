@@ -1,0 +1,8 @@
+name = "dj-booking"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = ".open-next/assets"
+
+[vars]
+# Non-secret env vars can go here; secrets go in Cloudflare dashboard
+NEXT_PUBLIC_BASE_URL = "https://your-project.pages.dev"

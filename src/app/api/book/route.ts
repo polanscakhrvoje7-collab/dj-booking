@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createHmac } from "crypto";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import { z } from "zod";
 import { isDateAvailable } from "@/lib/availability";
 import { format } from "date-fns";
@@ -48,20 +48,13 @@ function createToken(data: BookingData): string {
 async function sendApprovalEmail(data: BookingData, token: string) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
   const approveUrl = `${baseUrl}/api/approve?token=${token}`;
-
   const dateLabel = format(new Date(data.date), "EEEE, d. MMMM yyyy.", { locale: hr });
 
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.GMAIL_USER,
-      pass: process.env.GMAIL_APP_PASSWORD,
-    },
-  });
+  const resend = new Resend(process.env.RESEND_API_KEY);
 
-  await transporter.sendMail({
-    from: `"DJ Hrchoy Booking" <${process.env.GMAIL_USER}>`,
-    to: process.env.GMAIL_USER,
+  await resend.emails.send({
+    from: process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev",
+    to: process.env.GMAIL_USER!,
     subject: `📅 Nova rezervacija: ${data.name} — ${dateLabel}`,
     html: `
       <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;background:#fff;border:1px solid #e4e4e7;border-radius:8px">
