@@ -7,6 +7,6 @@ main = ".open-next/worker.js"
 directory = ".open-next/assets"
 binding = "ASSETS"
 
-[services]
+[[services]]
 binding = "WORKER_SELF_REFERENCE"
 service = "dj-booking"
