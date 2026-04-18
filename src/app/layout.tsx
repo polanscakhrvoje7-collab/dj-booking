@@ -16,11 +16,11 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "DJ Hrchoy — Rezervacije i Dostupnost",
+  title: "DJ Hrcoy — Rezervacije i Dostupnost",
   description:
-    "Rezervirajte vaš događaj s DJ Hrchoy. Provjerite dostupnost i pošaljite zahtjev za rezervaciju.",
+    "Rezervirajte vaš događaj s DJ Hrcoy. Provjerite dostupnost i pošaljite zahtjev za rezervaciju.",
   openGraph: {
-    title: "DJ Hrchoy — Rezervacije i Dostupnost",
+    title: "DJ Hrcoy — Rezervacije i Dostupnost",
     description: "Profesionalne DJ usluge. Provjerite dostupnost i rezervirajte vaš datum.",
     type: "website",
   },

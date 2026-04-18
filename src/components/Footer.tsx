@@ -34,7 +34,7 @@ export function Footer() {
         <div className="grid gap-10 md:grid-cols-2 md:justify-items-center">
           {/* Brand */}
           <div className="flex flex-col gap-4">
-            <span className="text-base font-bold tracking-tight text-white">DJ Hrchoy</span>
+            <span className="text-base font-bold tracking-tight text-white">DJ Hrcoy</span>
             <p className="text-sm leading-relaxed max-w-[240px] text-zinc-500">
               Profesionalne DJ usluge za vjenčanja, korporativne događaje, privatne zabave i klupske noći.
             </p>
@@ -65,7 +65,7 @@ export function Footer() {
         <Separator className="my-10 bg-zinc-900" />
 
         <div className="flex justify-center text-xs text-zinc-600">
-          <p>© {new Date().getFullYear()} DJ Hrchoy. Sva prava pridržana.</p>
+          <p>© {new Date().getFullYear()} DJ Hrcoy. Sva prava pridržana.</p>
         </div>
       </div>
     </footer>
