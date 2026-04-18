@@ -74,7 +74,8 @@ export async function GET() {
       { status: 200, headers: { "Cache-Control": "no-store" } }
     );
   } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
     console.error("[/api/availability]", err);
-    return NextResponse.json({ busyDates: [] }, { status: 200 });
+    return NextResponse.json({ busyDates: [], error: msg }, { status: 200 });
   }
 }
