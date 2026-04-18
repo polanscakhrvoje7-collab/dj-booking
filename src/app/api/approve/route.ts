@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createHmac } from "crypto";
-import { google } from "googleapis";
+import { getGoogleAccessToken, createCalendarEvent } from "@/lib/google-calendar";
 import { format } from "date-fns";
 import { hr } from "date-fns/locale/hr";
 
@@ -93,41 +93,36 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const auth = new google.auth.JWT({
-      email: serviceAccountEmail,
-      key: privateKey,
-      scopes: ["https://www.googleapis.com/auth/calendar"],
-    });
-
-    const calendar = google.calendar({ version: "v3", auth });
+    const accessToken = await getGoogleAccessToken(
+      serviceAccountEmail,
+      privateKey,
+      "https://www.googleapis.com/auth/calendar"
+    );
 
     const startDateTime = new Date(`${data.date}T${data.time}:00`);
     const endDateTime = new Date(startDateTime.getTime() + 4 * 60 * 60 * 1000);
     const dateLabel = format(new Date(data.date), "EEEE, d. MMMM yyyy.", { locale: hr });
 
-    await calendar.events.insert({
-      calendarId,
-      requestBody: {
-        summary: `DJ Booking: ${data.name} @ ${data.location}`,
-        location: data.location,
-        description: [
-          `👤 Klijent: ${data.name}`,
-          `📍 Lokacija: ${data.location}`,
-          `👥 Gosti: ${data.guestCount}`,
-          `📞 Telefon: ${data.phone}`,
-          `⏰ Početak: ${startDateTime.toLocaleString("hr-HR")}`,
-          `⏰ Kraj: ${endDateTime.toLocaleString("hr-HR")}`,
-        ].join("\n"),
-        start: { dateTime: startDateTime.toISOString(), timeZone },
-        end: { dateTime: endDateTime.toISOString(), timeZone },
-        colorId: "9",
-        reminders: {
-          useDefault: false,
-          overrides: [
-            { method: "email", minutes: 24 * 60 },
-            { method: "popup", minutes: 60 },
-          ],
-        },
+    await createCalendarEvent(accessToken, calendarId, {
+      summary: `DJ Booking: ${data.name} @ ${data.location}`,
+      location: data.location,
+      description: [
+        `👤 Klijent: ${data.name}`,
+        `📍 Lokacija: ${data.location}`,
+        `👥 Gosti: ${data.guestCount}`,
+        `📞 Telefon: ${data.phone}`,
+        `⏰ Početak: ${startDateTime.toLocaleString("hr-HR")}`,
+        `⏰ Kraj: ${endDateTime.toLocaleString("hr-HR")}`,
+      ].join("\n"),
+      start: { dateTime: startDateTime.toISOString(), timeZone },
+      end: { dateTime: endDateTime.toISOString(), timeZone },
+      colorId: "9",
+      reminders: {
+        useDefault: false,
+        overrides: [
+          { method: "email", minutes: 24 * 60 },
+          { method: "popup", minutes: 60 },
+        ],
       },
     });
 
