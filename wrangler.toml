@@ -10,3 +10,11 @@ binding = "ASSETS"
 [[services]]
 binding = "WORKER_SELF_REFERENCE"
 service = "djbooking"
+
+[vars]
+GOOGLE_SERVICE_ACCOUNT_EMAIL = "dj-booking-service@dj-booking-493611.iam.gserviceaccount.com"
+GOOGLE_CALENDAR_ID = "polanscakhrvoje@gmail.com"
+GOOGLE_CALENDAR_TIMEZONE = "Europe/Zagreb"
+RESEND_FROM_EMAIL = "onboarding@resend.dev"
+GMAIL_USER = "polanscakhrvoje@gmail.com"
+NEXT_PUBLIC_BASE_URL = "https://djbooking.polanscakhrvoje7.workers.dev"
