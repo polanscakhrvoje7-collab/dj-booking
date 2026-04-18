@@ -69,7 +69,7 @@ function html(title: string, message: string, color: string, baseUrl: string) {
 
 export async function GET(request: NextRequest) {
   const token = request.nextUrl.searchParams.get("token");
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
+  const baseUrl = process.env.BASE_URL ?? process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
 
   if (!token) return html("Neispravan zahtjev", "Token nedostaje.", "#dc2626", baseUrl);
 

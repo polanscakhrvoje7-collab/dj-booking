@@ -46,7 +46,7 @@ function createToken(data: BookingData): string {
 
 // ── Email ──────────────────────────────────────────────────────────────────────
 async function sendApprovalEmail(data: BookingData, token: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
+  const baseUrl = process.env.BASE_URL ?? process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
   const approveUrl = `${baseUrl}/api/approve?token=${token}`;
   const dateLabel = format(new Date(data.date), "EEEE, d. MMMM yyyy.", { locale: hr });
 
@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
 
   // Check Google Calendar for existing events
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
+    const baseUrl = process.env.BASE_URL ?? process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
     const availRes = await fetch(`${baseUrl}/api/availability`);
     const availData = await availRes.json() as { busyDates: string[] };
     if (availData.busyDates?.includes(data.date)) {
