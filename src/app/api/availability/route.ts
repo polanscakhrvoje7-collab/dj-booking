@@ -9,7 +9,10 @@ export async function GET() {
   const calendarId = process.env.GOOGLE_CALENDAR_ID ?? "primary";
 
   if (!serviceAccountEmail || !privateKey) {
-    return NextResponse.json({ busyDates: [] }, { status: 200 });
+    return NextResponse.json(
+      { busyDates: [], debug: "missing_env", has_email: !!serviceAccountEmail, has_key: !!privateKey },
+      { status: 200 }
+    );
   }
 
   try {
@@ -75,7 +78,8 @@ export async function GET() {
       { status: 200, headers: { "Cache-Control": "no-store" } }
     );
   } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
     console.error("[/api/availability]", err);
-    return NextResponse.json({ busyDates: [] }, { status: 200 });
+    return NextResponse.json({ busyDates: [], debug: "error", error: msg }, { status: 200 });
   }
 }
