@@ -25,6 +25,9 @@ export function HeroSection() {
           <span className="block text-[clamp(5rem,16vw,11rem)] font-bold leading-none tracking-tighter text-white">
             DJ Hrchoy
           </span>
+          <span className="block text-[clamp(0.75rem,1.5vw,0.9rem)] font-light tracking-widest text-zinc-500 mt-3">
+            „aka DJ Purger"
+          </span>
         </h1>
 
         {/* Thin rule */}
