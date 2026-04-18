@@ -26,7 +26,7 @@ export function HeroSection() {
             DJ Hrchoy
           </span>
           <span className="block text-[clamp(0.75rem,1.5vw,0.9rem)] font-light tracking-widest text-zinc-500 mt-3">
-            aka „DJ Purger"
+            aka "DJ Purger"
           </span>
         </h1>
 
