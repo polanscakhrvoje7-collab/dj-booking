@@ -10,7 +10,10 @@ export async function GET() {
   const timeZone = process.env.GOOGLE_CALENDAR_TIMEZONE ?? "Europe/Zagreb";
 
   if (!serviceAccountEmail || !privateKey) {
-    return NextResponse.json({ busyDates: [] }, { status: 200 });
+    return NextResponse.json(
+      { busyDates: [], debug: "missing env vars", has_email: !!serviceAccountEmail, has_key: !!privateKey },
+      { status: 200 }
+    );
   }
 
   try {
@@ -89,7 +92,8 @@ export async function GET() {
       }
     );
   } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
     console.error("[/api/availability]", err);
-    return NextResponse.json({ busyDates: [] }, { status: 200 });
+    return NextResponse.json({ busyDates: [], debug: "error", error: msg }, { status: 200 });
   }
 }
